@@ -26,7 +26,7 @@ class App extends CI_Controller {
 		$data['breadcrumbs1'] = 'Log Aktifitas';
 		$data['breadcrumbs2'] = '';
 		$data['breadcrumbs3'] = '';
-		$data['data_tabel'] = $this->Main_model->getSelectedData('activity_logs a', 'a.*,b.fullname', '', "a.activity_time DESC",'','','',array(
+		$data['data_tabel'] = $this->Main_model->getSelectedData('activity_logs a', 'a.*,b.fullname', array('b.id'=>$this->session->userdata('id')), "a.activity_time DESC",'','','',array(
 			'table' => 'user b',
 			'on' => 'a.user_id=b.id',
 			'pos' => 'LEFT'

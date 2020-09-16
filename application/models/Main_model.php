@@ -36,7 +36,7 @@ class Main_model extends CI_Model
 		$nomor_pasien = '';
 		$year_code = date('y');
 		$first_char = strtoupper(substr($nama,0,1));
-		$check_year_code = "SELECT *  FROM `pasien` WHERE `nomor_pasien` LIKE '%.".$year_code.".%' ORDER BY `id_pasien` DESC LIMIT 1";
+		$check_year_code = "SELECT *  FROM `pasien` WHERE `nomor_pasien` LIKE '%.".$year_code.".%' AND `company_id` = ".$this->session->userdata('company_id')." ORDER BY `id_pasien` DESC LIMIT 1";
 		$get_last_data = $this->db->query($check_year_code)->row();
 		if($get_last_data==NULL){
 			$nomor_pasien = $first_char.'.'.$year_code.'.1001';
@@ -86,6 +86,7 @@ class Main_model extends CI_Model
 			'activity_type' => $activity_type,
 			'activity_data' => $activity_data,
 			'activity_time' => date('Y-m-d H-i-s'),
+			'url' => current_url(),
 			'activity_ip_address' => $this->input->ip_address(),
 			'activity_device' => $device,
 			'activity_os' => $this->agent->platform(),

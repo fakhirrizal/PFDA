@@ -20,7 +20,7 @@ class Master extends CI_Controller {
 	}
 	public function json_data_fisioterapi()
 	{
-		$get_data = $this->Main_model->getSelectedData('fisioterapi a', 'a.*',array('a.deleted' => '0'))->result();
+		$get_data = $this->Main_model->getSelectedData('fisioterapi a', 'a.*',array('a.company_id'=>$this->session->userdata('company_id'),'a.deleted' => '0'))->result();
 		$data_tampil = array();
 		$no = 1;
 		foreach ($get_data as $key => $value) {
@@ -79,6 +79,7 @@ class Master extends CI_Controller {
 				'pass' => $this->input->post('ps'),
 				'fullname' => $this->input->post('nama'),
 				'is_active' => '1',
+				'company_id'=>$this->session->userdata('company_id'),
 				'created_by' => $this->session->userdata('id'),
 				'created_at' => date('Y-m-d H:i:s')
 			);
@@ -87,7 +88,8 @@ class Master extends CI_Controller {
 
 			$data_insert2 = array(
 				'user_id' => $get_user_id['id']+1,
-				'role_id' => '2'
+				'role_id' => '2',
+				'company_id'=>$this->session->userdata('company_id')
 			);
 			$this->Main_model->insertData('user_to_role',$data_insert2);
 			// print_r($data_insert2);
@@ -96,7 +98,8 @@ class Master extends CI_Controller {
 				'user_id' => $get_user_id['id']+1,
 				'nama' => $this->input->post('nama'),
 				'alamat' => $this->input->post('alamat'),
-				'no_hp' => $this->input->post('no_hp')
+				'no_hp' => $this->input->post('no_hp'),
+				'company_id'=>$this->session->userdata('company_id')
 			);
 			$this->Main_model->insertData('fisioterapi',$data_insert3);
 			// print_r($data_insert3);
@@ -215,7 +218,7 @@ class Master extends CI_Controller {
 	}
 	public function json_data_pasien()
 	{
-		$get_data = $this->Main_model->getSelectedData('pasien a', 'a.*',array('a.deleted' => '0'))->result();
+		$get_data = $this->Main_model->getSelectedData('pasien a', 'a.*',array('a.company_id'=>$this->session->userdata('company_id'),'a.deleted' => '0'))->result();
 		$data_tampil = array();
 		$no = 1;
 		foreach ($get_data as $key => $value) {
@@ -270,7 +273,8 @@ class Master extends CI_Controller {
 			'alamat' => $this->input->post('alamat'),
 			'no_hp' => $this->input->post('no_hp'),
 			'tanggal_lahir' => $this->input->post('tanggal_lahir'),
-			'nama_wali' => $this->input->post('nama_wali')
+			'nama_wali' => $this->input->post('nama_wali'),
+			'company_id'=>$this->session->userdata('company_id')
 		);
 		$this->Main_model->insertData('pasien',$data_insert1);
 		// print_r($data_insert1);

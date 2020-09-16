@@ -48,7 +48,7 @@ class Auth extends CI_Controller {
 					);
 					$this->Main_model->updateData('user',$data_log,array('id'=>$value->id));
 					$this->Main_model->log_activity($value->id,'Login to system','Login via web browser',$this->input->post('location'));
-					$role = $this->Main_model->getSelectedData('user_to_role a', 'b.route,a.user_id,a.role_id', array('a.user_id'=>$value->id,'b.deleted'=>'0'), "",'1','','',array(
+					$role = $this->Main_model->getSelectedData('user_to_role a', 'a.company_id,b.route,a.user_id,a.role_id', array('a.user_id'=>$value->id,'b.deleted'=>'0'), "",'1','','',array(
 						'table' => 'user_role b',
 						'on' => 'a.role_id=b.id',
 						'pos' => 'LEFT'
@@ -62,6 +62,11 @@ class Auth extends CI_Controller {
 					}else{
 						foreach ($role as $key => $value2) {
 							if($value2->role_id!=NULL){
+								if($value2->role_id=='0'){
+									echo'';
+								}else{
+									$sess_data['company_id'] = $value2->company_id;
+								}
 								$sess_data['id'] = $value2->user_id;
 								$sess_data['role_id'] = $value2->role_id;
 								$sess_data['location'] = $this->input->post('location');

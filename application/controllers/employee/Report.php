@@ -13,7 +13,7 @@ class Report extends CI_Controller {
 		$data['breadcrumbs1'] = 'Pemeriksaan';
 		$data['breadcrumbs2'] = '';
         $data['breadcrumbs3'] = '';
-        $data['pasien'] = $this->Main_model->getSelectedData('pasien a', 'a.*', array('a.deleted'=>'0'))->result();
+        $data['pasien'] = $this->Main_model->getSelectedData('pasien a', 'a.*', array('a.deleted'=>'0','a.company_id'=>$this->session->userdata('company_id')))->result();
 		$this->load->view('employee/template/header',$data);
 		$this->load->view('employee/report/pemeriksaan',$data);
 		$this->load->view('employee/template/footer');
@@ -35,6 +35,7 @@ class Report extends CI_Controller {
 			'catatan' => $this->input->post('catatan'),
 			'created_by' => $this->session->userdata('id'),
 			'created_at' => date('Y-m-d H:i:s')
+			,'company_id'=>$this->session->userdata('company_id')
 		);
 		$this->Main_model->insertData('pemeriksaan',$data_insert1);
 		// print_r($data_insert1);

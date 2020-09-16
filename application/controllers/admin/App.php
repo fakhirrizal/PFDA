@@ -15,15 +15,15 @@ class App extends CI_Controller {
 		$data['breadcrumbs1'] = 'Beranda';
 		$data['breadcrumbs2'] = '';
 		$data['breadcrumbs3'] = '';
-		$data['data_fisioterapi'] = $this->Main_model->getSelectedData('fisioterapi a', 'a.*', array('a.deleted'=>'0'))->result();
-		$data['data_fisioterapi_limit'] = $this->Main_model->getSelectedData('fisioterapi a', 'a.*,b.photo', array('a.deleted'=>'0'), '', '5', '', '', array(
+		$data['data_fisioterapi'] = $this->Main_model->getSelectedData('fisioterapi a', 'a.*', array('a.company_id'=>$this->session->userdata('company_id'),'a.deleted'=>'0'))->result();
+		$data['data_fisioterapi_limit'] = $this->Main_model->getSelectedData('fisioterapi a', 'a.*,b.photo', array('a.company_id'=>$this->session->userdata('company_id'),'a.deleted'=>'0'), '', '5', '', '', array(
 			'table' => 'user b',
 			'on' => 'a.user_id=b.id',
 			'pos' => 'LEFT'
 		))->result();
-		$data['data_pasien'] = $this->Main_model->getSelectedData('pasien a', 'a.*', array('a.deleted'=>'0'))->result();
-		$data['data_pasien_limit'] = $this->Main_model->getSelectedData('pasien a', 'a.*', array('a.deleted'=>'0'), '', '5')->result();
-		$data['data_pemeriksaan'] = $this->db->query("SELECT a.*,b.nama AS fisioterapi,c.nama AS pasien FROM pemeriksaan a LEFT JOIN fisioterapi b ON a.user_id=b.user_id LEFT JOIN pasien c ON a.id_pasien=c.id_pasien WHERE a.created_at LIKE '%".$cur_date."%' ORDER BY `a`.`created_at` ASC")->result();
+		$data['data_pasien'] = $this->Main_model->getSelectedData('pasien a', 'a.*', array('a.company_id'=>$this->session->userdata('company_id'),'a.deleted'=>'0'))->result();
+		$data['data_pasien_limit'] = $this->Main_model->getSelectedData('pasien a', 'a.*', array('a.company_id'=>$this->session->userdata('company_id'),'a.deleted'=>'0'), '', '5')->result();
+		$data['data_pemeriksaan'] = $this->db->query("SELECT a.*,b.nama AS fisioterapi,c.nama AS pasien FROM pemeriksaan a LEFT JOIN fisioterapi b ON a.user_id=b.user_id LEFT JOIN pasien c ON a.id_pasien=c.id_pasien WHERE a.created_at LIKE '%".$cur_date."%' AND a.company_id='".$this->session->userdata('company_id')."' ORDER BY `a`.`created_at` ASC")->result();
 		$this->load->view('admin/template/header',$data);
 		$this->load->view('admin/app/home',$data);
 		$this->load->view('admin/template/footer');
@@ -36,7 +36,7 @@ class App extends CI_Controller {
 		$data['breadcrumbs1'] = 'Log Aktifitas';
 		$data['breadcrumbs2'] = '';
 		$data['breadcrumbs3'] = '';
-		$data['data_tabel'] = $this->Main_model->getSelectedData('activity_logs a', 'a.*,b.fullname', '', "a.activity_time DESC",'','','',array(
+		$data['data_tabel'] = $this->Main_model->getSelectedData('activity_logs a', 'a.*,b.fullname', array('b.company_id'=>$this->session->userdata('company_id')), "a.activity_time DESC",'','','',array(
 			'table' => 'user b',
 			'on' => 'a.user_id=b.id',
 			'pos' => 'LEFT'
@@ -47,7 +47,7 @@ class App extends CI_Controller {
 	}
 	public function json_log_activity()
 	{
-		$get_data = $this->Main_model->getSelectedData('activity_logs a', 'a.*,b.fullname', '', "a.activity_time DESC",'','','',array(
+		$get_data = $this->Main_model->getSelectedData('activity_logs a', 'a.*,b.fullname', array('b.company_id'=>$this->session->userdata('company_id')), "a.activity_time DESC",'','','',array(
 			'table' => 'user b',
 			'on' => 'a.user_id=b.id',
 			'pos' => 'LEFT'
@@ -105,7 +105,8 @@ class App extends CI_Controller {
 	public function cleaning_log()
 	{
 		$this->db->trans_start();
-		$this->Main_model->cleanData('activity_logs');
+		// $this->Main_model->cleanData('activity_logs');
+		$this->db->query("DELETE a.* FROM activity_logs a LEFT JOIN user b ON a.user_id=b.id WHERE b.company_id = ".$this->session->userdata('company_id'));
 		$this->db->trans_complete();
 		if($this->db->trans_status() === false){
 			$this->session->set_flashdata('gagal','<div class="alert alert-warning fade show" role="alert"><div class="alert-icon"><i class="flaticon2-cancel-music"></i></div><div class="alert-text"><strong>Oops!!!</strong> Data gagal dihapus.</div><div class="alert-close"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="la la-close"></i></span></button></div></div>' );

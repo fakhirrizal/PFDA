@@ -13,8 +13,8 @@ class Report extends CI_Controller {
 		$data['breadcrumbs1'] = 'Pemeriksaan';
 		$data['breadcrumbs2'] = '';
         $data['breadcrumbs3'] = '';
-        $data['fisioterapi'] = $this->Main_model->getSelectedData('fisioterapi a', 'a.*', array('a.deleted'=>'0'))->result();
-        $data['pasien'] = $this->Main_model->getSelectedData('pasien a', 'a.*', array('a.deleted'=>'0'))->result();
+        $data['fisioterapi'] = $this->Main_model->getSelectedData('fisioterapi a', 'a.*', array('a.company_id'=>$this->session->userdata('company_id'),'a.deleted'=>'0'))->result();
+        $data['pasien'] = $this->Main_model->getSelectedData('pasien a', 'a.*', array('a.company_id'=>$this->session->userdata('company_id'),'a.deleted'=>'0'))->result();
 		$this->load->view('admin/template/header',$data);
 		$this->load->view('admin/report/pemeriksaan',$data);
 		$this->load->view('admin/template/footer');
@@ -36,7 +36,8 @@ class Report extends CI_Controller {
 			'personal_factors' => $this->input->post('personal_factors'),
 			'catatan' => $this->input->post('catatan'),
 			'created_by' => $this->session->userdata('id'),
-			'created_at' => date('Y-m-d H:i:s')
+			'created_at' => date('Y-m-d H:i:s'),
+			'company_id'=>$this->session->userdata('company_id')
 		);
 		$this->Main_model->insertData('pemeriksaan',$data_insert1);
 		// print_r($data_insert1);
@@ -136,7 +137,7 @@ class Report extends CI_Controller {
 	}
 	public function json_data_pemeriksaan()
 	{
-		$get_data = $this->Main_model->getSelectedData('pemeriksaan a', 'a.*,b.nama AS fisioterapi,c.nomor_pasien,c.nama AS pasien', '', '', '', '', '', array(
+		$get_data = $this->Main_model->getSelectedData('pemeriksaan a', 'a.*,b.nama AS fisioterapi,c.nomor_pasien,c.nama AS pasien', array('a.company_id'=>$this->session->userdata('company_id')), '', '', '', '', array(
 			array(
 				'table' => 'fisioterapi b',
 				'on' => 'a.user_id=b.user_id',
@@ -384,8 +385,8 @@ class Report extends CI_Controller {
 			$data['tanggal_depan'] = $pecah_tanggal[0];
 			$data['tanggal_belakang'] = $up_date;
 			$data['periode'] = $this->Main_model->convert_tanggal($pecah_tanggal[0]).' - '.$this->Main_model->convert_tanggal($pecah_tanggal[1]);
-			$data['data_fisioterapi'] = $this->Main_model->getSelectedData('fisioterapi b', "b.*,(SELECT COUNT(a.id_pemeriksaan) FROM pemeriksaan a WHERE a.user_id=b.user_id AND a.created_at BETWEEN '".$pecah_tanggal[0]."' AND '".$up_date."') jml", array('b.deleted' => '0'), 'jml DESC')->result();
-			$data['data_pasien'] = $this->Main_model->getSelectedData('pasien b', "b.*,(SELECT COUNT(a.id_pemeriksaan) FROM pemeriksaan a WHERE a.id_pasien=b.id_pasien AND a.created_at BETWEEN '".$pecah_tanggal[0]."' AND '".$up_date."') jml", array('b.deleted' => '0'), 'jml DESC')->result();
+			$data['data_fisioterapi'] = $this->Main_model->getSelectedData('fisioterapi b', "b.*,(SELECT COUNT(a.id_pemeriksaan) FROM pemeriksaan a WHERE a.user_id=b.user_id AND a.created_at BETWEEN '".$pecah_tanggal[0]."' AND '".$up_date."') jml", array('b.deleted' => '0','b.company_id'=>$this->session->userdata('company_id')), 'jml DESC')->result();
+			$data['data_pasien'] = $this->Main_model->getSelectedData('pasien b', "b.*,(SELECT COUNT(a.id_pemeriksaan) FROM pemeriksaan a WHERE a.id_pasien=b.id_pasien AND a.created_at BETWEEN '".$pecah_tanggal[0]."' AND '".$up_date."') jml", array('b.deleted' => '0','b.company_id'=>$this->session->userdata('company_id')), 'jml DESC')->result();
 			// $get_data = $this->db->query("SELECT COUNT(a.id_pemeriksaan) FROM pemeriksaan a WHERE a.created_at BETWEEN '".$pecah_tanggal[0]."' AND '".$up_date."'")->result();
 		}else{
 			$data['ajax'] = 'close';

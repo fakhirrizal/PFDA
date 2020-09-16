@@ -20,7 +20,7 @@ class Master extends CI_Controller {
 	}
 	public function json_data_fisioterapi()
 	{
-		$get_data = $this->Main_model->getSelectedData('fisioterapi a', 'a.*',array('a.deleted' => '0'))->result();
+		$get_data = $this->Main_model->getSelectedData('fisioterapi a', 'a.*',array('a.deleted' => '0','a.company_id'=>$this->session->userdata('company_id')))->result();
 		$data_tampil = array();
 		$no = 1;
 		foreach ($get_data as $key => $value) {
@@ -65,7 +65,7 @@ class Master extends CI_Controller {
 	}
 	public function json_data_pasien()
 	{
-		$get_data = $this->Main_model->getSelectedData('pasien a', 'a.*',array('a.deleted' => '0'))->result();
+		$get_data = $this->Main_model->getSelectedData('pasien a', 'a.*',array('a.deleted' => '0','a.company_id'=>$this->session->userdata('company_id')))->result();
 		$data_tampil = array();
 		$no = 1;
 		foreach ($get_data as $key => $value) {
@@ -121,6 +121,7 @@ class Master extends CI_Controller {
 			'no_hp' => $this->input->post('no_hp'),
 			'tanggal_lahir' => $this->input->post('tanggal_lahir'),
 			'nama_wali' => $this->input->post('nama_wali')
+			,'company_id'=>$this->session->userdata('company_id')
 		);
 		$this->Main_model->insertData('pasien',$data_insert1);
 		// print_r($data_insert1);
